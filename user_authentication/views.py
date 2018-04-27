@@ -69,7 +69,7 @@ def login_handle(request):
         s1.update(upwd.encode("utf8"))
         if s1.hexdigest() == user[0].upwd:
             # 密码验证通过,转到主页
-            page = HttpResponseRedirect('/user/info/')  # 直接redirect不能设cookies
+            page = HttpResponseRedirect('/index/')  # 直接redirect不能设cookies
 
             # 是否保存用户名
             if jizhu != 0:

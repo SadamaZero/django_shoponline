@@ -124,9 +124,10 @@ $(function(){
 		check_pwd();
 		check_cpwd();
 		check_email();
+		console.log(error_email,error_name,error_check);
 		if(error_name === false && error_password === false && error_check_password === false && error_email === false && error_check === false)
 		{
-			return false;
+			return true;
 		}
 		else
 		{
