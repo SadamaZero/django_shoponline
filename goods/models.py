@@ -21,3 +21,6 @@ class GoodsInfo(models.Model):
     content = HTMLField()
     stock = models.IntegerField()
     type = models.ForeignKey(TypeInfo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name

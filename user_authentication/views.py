@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect, reverse
 from django.http import JsonResponse
 from .models import UserInfo
 from hashlib import sha1
+from . import user_decorator
+from goods.models import GoodsInfo
 
 
 def register(request):
@@ -35,8 +37,6 @@ def register_handle(request):
     return redirect('/user/login/')
 
 
-
-
 # 判断用户名是否已存在
 def register_exist(request):
     uname_check = request.GET.get('uname')
@@ -45,6 +45,7 @@ def register_exist(request):
 
 
 def login(request):
+    from_page = request.GET.get('from')
     uname = request.COOKIES.get('uname', '')
     context = {
         'title': '用户登陆',
@@ -52,8 +53,9 @@ def login(request):
         'error_pwd': 0,
         'uname': uname,
     }
-
-    return render(request, 'user_authentication/login.html', context)
+    res = render(request, "user_authentication/login.html", context)
+    res.set_cookie('url_from', from_page)
+    return res
 
 
 def login_handle(request):
@@ -68,8 +70,9 @@ def login_handle(request):
         s1 = sha1()
         s1.update(upwd.encode("utf8"))
         if s1.hexdigest() == user[0].upwd:
-            # 密码验证通过,转到主页
-            page = HttpResponseRedirect('/index/')  # 直接redirect不能设cookies
+            # 密码验证通过,转到from
+            url_from = request.COOKIES.get('url_from', '/index/')
+            page = HttpResponseRedirect(url_from, reverse('main_page'))  # 直接redirect不能设cookies
 
             # 是否保存用户名
             if jizhu != 0:
@@ -101,5 +104,39 @@ def login_handle(request):
         return render(request, 'user_authentication/login.html', context)
 
 
-def info(request):
-    return render(request, 'user_authentication/user_center_info.html')
+def logout_handle(request):
+    request.session.flush()
+    return redirect('/index/')
+
+
+@user_decorator.login_status
+def center_info(request):
+    email = UserInfo.objects.get(id=request.session['user_id']).uemail
+
+    # 查询最近浏览
+    goods_recent_cookie = request.COOKIES.get('goods_recent_cookie', '4')
+    goods_recent_l = goods_recent_cookie.split(',')
+    goods_list = []
+    for goods_id in goods_recent_l:
+        goods_recent = GoodsInfo.objects.get(id=int(goods_id))
+        goods_list.append(goods_recent)
+
+    context = {
+        'title': '用户中心',
+        'user_email': email,
+        'user_name': request.session['user_name'],
+        'page_name': 1,
+        'goods_list': goods_list
+    }
+
+    return render(request, 'user_authentication/user_center_info.html', context)
+
+
+@user_decorator.login_status
+def center_order(request):
+    pass
+
+
+@user_decorator.login_status
+def center_site(request):
+    pass

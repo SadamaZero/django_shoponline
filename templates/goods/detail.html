@@ -1,4 +1,33 @@
 {% extends 'goods/base.html' %}
+
+{% block js_default %}
+    <script>
+        function add() {
+            num=parseFloat($('.num_show').val());
+            if(num>0 && num<999){
+              $('.num_show').val(num+1);
+            }
+            $('.num_show').blur();
+        }
+        function minus() {
+            num=parseFloat($('.num_show').val());
+            if(num>1 && num<999){
+              $('.num_show').val(num-1);
+            }
+            $('.num_show').blur();
+        }
+
+        $(function () {
+            $('.num_show').blur(function () {
+                num=parseFloat($('.num_show').val());
+                price=parseFloat($('#price').text());
+                total=num*price
+                $('#total_price').text(total.toFixed(2)+'元')
+            })
+        })
+    </script>
+{% endblock js_default %}
+
 {% block detail_comment %}
 	<div class="goods_detail_con clearfix">
 		<div class="goods_detail_pic fl"><img src="/{{ good.pic }}"></div>
@@ -7,18 +36,18 @@
 			<h3>{{ good.name }}</h3>
 			<p>{{ good.summary }}</p>
 			<div class="prize_bar">
-				<span class="show_pirze">¥<em>{{ good.unit_price }}</em></span>
+				<span class="show_pirze">¥<em id="price">{{ good.unit_price }}</em></span>
 				<span class="show_unit">单  位：{{ good.unit }}</span>
 			</div>
 			<div class="goods_num clearfix">
 				<div class="num_name fl">数 量：</div>
 				<div class="num_add fl">
 					<input type="text" class="num_show fl" value="1">
-					<a href="javascript:;" class="add fr">+</a>
-					<a href="javascript:;" class="minus fr">-</a>	
+					<a href="javascript:add();" class="add fr">+</a>
+					<a href="javascript:minus();" class="minus fr">-</a>
 				</div> 
 			</div>
-			<div class="total">总价：<em>16.80元</em></div>
+			<div class="total">总价：<em id="total_price">{{ good.unit_price }}元</em></div>
 			<div class="operate_btn">
 				<a href="javascript:;" class="buy_btn">立即购买</a>
 				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
@@ -46,7 +75,6 @@
 
     <div class="add_jump"></div>
 
-	<script type="text/javascript" src="js/jquery-1.12.2.js"></script>
 	<script type="text/javascript">
 		var $add_x = $('#add_cart').offset().top;
 		var $add_y = $('#add_cart').offset().left;

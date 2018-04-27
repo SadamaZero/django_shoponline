@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'user_authentication',
     'tinymce',
     'goods',
+    'cart',
 ]
 
 MIDDLEWARE = [

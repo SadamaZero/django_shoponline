@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('tinymce/', include('tinymce.urls')),
     path('user/', include('user_authentication.urls')),
+    path('user/cart/', include('cart.urls')),
     path('', include('goods.urls')),
 ]

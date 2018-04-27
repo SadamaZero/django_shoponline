@@ -40,13 +40,15 @@ def goods_list(request, tid, pindex=1, sort=1):  # type_id,page_num,排序依据
     typeinfo = TypeInfo.objects.get(pk=tid)
     new_goods = typeinfo.goodsinfo_set.order_by('-id')[0:2]  # 侧边栏新品
 
-    if sort == '1':  # 按上架时间
+    if sort == 1:  # 按上架时间
         # list_goods = new_goods
         list_goods = GoodsInfo.objects.filter(type_id=tid).order_by('-id')
-    elif sort == '2':  # 价格排序
+    elif sort == 2:  # 价格排序
         list_goods = GoodsInfo.objects.filter(type_id=tid).order_by('-unit_price')
-    else:  # 点击量
+    elif sort == 3:  # 点击量
         list_goods = GoodsInfo.objects.filter(type_id=tid).order_by('-click')
+    else:
+        list_goods = GoodsInfo.objects.filter(type_id=tid).order_by('-unit_price')
 
     paginator = Paginator(list_goods, 10)
     page = paginator.get_page(pindex)
@@ -57,7 +59,8 @@ def goods_list(request, tid, pindex=1, sort=1):  # type_id,page_num,排序依据
         'paginator': paginator,
         'typeinfo': typeinfo,
         'sort': sort,
-        'new_goods': new_goods
+        'new_goods': new_goods,
+        'tid': tid,
     }
 
     return render(request, 'goods/list.html', context)
@@ -75,4 +78,23 @@ def good_detail(request, g_id):
         'id': g_id,
     }
 
-    return render(request, 'goods/detail.html', context)
+    # 浏览记录
+    goods_recent_cookie = request.COOKIES.get('goods_recent_cookie', '')
+    good_id_recent = '%d' % good.id
+    if goods_recent_cookie != '':  # 若有记录
+        good_id_recent_l = goods_recent_cookie.split(',')
+        if good_id_recent_l.count(good_id_recent) >= 1:
+            good_id_recent_l.remove(good_id_recent)  # 删除上一次，排到最近一次
+        good_id_recent_l.insert(0, good_id_recent)
+
+        if len(good_id_recent_l) >= 6:
+            del good_id_recent_l[5]
+        goods_recent_cookie = ','.join(good_id_recent_l)
+
+    else:
+        goods_recent_cookie = good_id_recent
+
+    res = render(request, 'goods/detail.html', context)
+    res.set_cookie('goods_recent_cookie', goods_recent_cookie)
+
+    return res
