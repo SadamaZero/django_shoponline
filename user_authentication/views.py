@@ -6,6 +6,7 @@ from . import user_decorator
 from goods.models import GoodsInfo
 
 
+
 def register(request):
     context = {
         'title': '新用户注册',
@@ -73,6 +74,9 @@ def login_handle(request):
             # 密码验证通过,转到from
             url_from = request.COOKIES.get('url_from', '/index/')
             page = HttpResponseRedirect(url_from, reverse('main_page'))  # 直接redirect不能设cookies
+# =======
+#             page = HttpResponseRedirect(url_from)  # 直接redirect不能设cookies
+# >>>>>>> da9dbe218ba95d52956563521e414580bcea717a
 
             # 是否保存用户名
             if jizhu != 0:
@@ -130,6 +134,9 @@ def center_info(request):
     }
 
     return render(request, 'user_authentication/user_center_info.html', context)
+# =======
+#     return render(request, 'user_authentication/user_center_info.html')
+# >>>>>>> da9dbe218ba95d52956563521e414580bcea717a
 
 
 @user_decorator.login_status
