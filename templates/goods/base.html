@@ -13,7 +13,7 @@
                     </div>
                 {% else %}
                     <div class="login_btn fl">
-					    <a href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a>
+					    <a href="{% url 'login' %}?from={{ request.get_full_path }}" id="login_a">登录</a>
 					    <span>|</span>
 					    <a href="{% url 'register' %}">注册</a>
 				    </div>
@@ -38,8 +38,8 @@
 			<input type="button" class="input_btn fr" name="" value="搜索">
 		</div>
 		<div class="guest_cart fr">
-			<a href="#" class="cart_name fl">我的购物车</a>
-			<div class="goods_count fl">1</div>
+			<a href="{% url 'cart_index'%}" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fl" id="show_count">0</div>
 		</div>
 	</div>
 

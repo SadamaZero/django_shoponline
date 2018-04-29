@@ -83,15 +83,30 @@
 
 		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
 		$('#add_cart').click(function(){
+		    //if($('.login_btn').text().indexOf('登陆')>=0){
+		    //    alert('请先登录');
+		    //    location.href='{% url 'login'%}';
+		    //    return;
+            //}
+            if($('.login_btn').text().indexOf('注册')!==-1) {
+               alert('请先登录');
+               document.cookie='url_from='+'555';
+               location.href='{% url 'login'%}?from={{ request.get_full_path }}';
+               return;
+            }
+
 			$(".add_jump").stop().animate({
 				'left': $to_y+7,
 				'top': $to_x+7},
 				"fast", function() {
 					$(".add_jump").fadeOut('fast',function(){
-						$('#show_count').html(2);
+						//$('#show_count').html(2);
 					});
-
+            num = parseInt($('.num_show').val());
+            $.get('/user/cart/add{{ good.id }}_'+num+'/',function (data) {
+                $('#show_count').html(data.count);
+            })
 			});
-		})
+		});
 	</script>
 {% endblock detail %}

@@ -24,13 +24,13 @@
 
     <ul class="goods_type_list clearfix">
         {% for good in page %}
-            <li>
+            <li id="{{ good.id }}">
                 <a href="/detail_{{ good.id }}/"><img src="/{{ good.pic }}"></a>
                 <h4><a href="detail_{{ good.id }}/">{{ good.name }}</a></h4>
                 <div class="operate">
                     <span class="prize">￥{{ good.unit_price }}</span>
                     <span class="unit">/{{ good.unit }}</span>
-                    <a href='javascript:;/user/cart/add{{ good.id }}_1/' class="add_goods" title="加入购物车"></a>
+                    <a href='/user/cart/add{{ good.id }}_1/' id="add_cart" class="add_goods" title="加入购物车"></a>
                 </div>
             </li>
         {% endfor %}
@@ -53,4 +53,42 @@
     </div>
 
     </div>>
+
+{#    <div class="add_goods add_jump"></div>#}
+
+	<script type="text/javascript">
+		var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+		$('#add_cart').click(function(){
+		    //if($('.login_btn').text().indexOf('登陆')>=0){
+		    //    alert('请先登录');
+		    //    location.href='{% url 'login'%}';
+		    //    return;
+            //}
+            if($('.login_btn').text().indexOf('注册')!==-1) {
+               alert('请先登录');
+               document.cookie='url_from='+'555';
+               location.href='{% url 'login'%}?from={{ request.get_full_path }}';
+               return;
+            }
+
+			$(".add_jump").stop().animate({
+				'left': $to_y+7,
+				'top': $to_x+7},
+				"fast", function() {
+					$(".add_jump").fadeOut('fast',function(){
+						//$('#show_count').html(2);
+					});
+                    var goods_id =
+            $.get('/user/cart/add{{ good.id }}_1/',function (data) {
+                $('#show_count').html(data.count);
+            })
+			});
+		});
+	</script>
 {% endblock detail %}

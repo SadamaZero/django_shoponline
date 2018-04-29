@@ -355,7 +355,7 @@ html,body{height:100%}
 .cart_list_th .col05{width:15%;}
 .cart_list_th .col06{width:18%;}
 
-.cart_list_td{width:1198px;border:1px solid #ddd;background-color:#edfff9;margin:0 auto;margin-top:-1px;}
+.cart_list_td{width:1198px;border:1px solid #ddd;background-color:white;margin:0 auto;margin-top:-1px;}
 .cart_list_td li{height:120px;line-height:120px;float:left;text-align:center;}
 
 .cart_list_td .col01{width:4%;}

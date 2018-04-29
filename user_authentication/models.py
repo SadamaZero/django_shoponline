@@ -10,3 +10,6 @@ class UserInfo(models.Model):
     uaddress = models.CharField(max_length=100, default='')
     uyoubian = models.CharField(max_length=6, default='')
     uphone = models.CharField(max_length=11, default='')
+
+    def __str__(self):
+        return self.uname

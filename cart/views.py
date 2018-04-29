@@ -7,12 +7,12 @@ from .models import *
 @user_decorator.login_status
 def cart(request):
     user_id = request.session['user_id']
-    cart_record = Cart.objects.filter(user_id=user_id)
+    cart_records = Cart.objects.filter(user_id=user_id).order_by('-id')
 
     context = {
         'title': '购物车',
         'page_name': 1,
-        'cart_record': cart_record,
+        'cart_records': cart_records,
     }
     return render(request, 'cart/cart.html', context)
 
@@ -40,7 +40,12 @@ def add_to_cart(request, goods_id, count):
         return redirect(reverse('cart_index'))
 
 
-def edit(request):
+@user_decorator.login_status
+def edit(request, cart_id, count):
+    # try:
+    #     cart = Cart.objects.filter(pk=cart_id)
+    #     # count_base = cart.count = count
+    # except
     pass
 
 
