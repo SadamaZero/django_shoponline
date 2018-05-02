@@ -146,7 +146,11 @@ html,body{height:100%}
 /* 页面底部样式 */
 .footer{
 	border-top:2px solid #42ad46;
-	margin:30px 0;
+	margin-top:30px!important;
+	margin-bottom:30px;
+	/*position: absolute;*/
+    bottom: 0;
+    width: 100%;
 }
 
 .foot_link{text-align:center;margin-top:30px;}

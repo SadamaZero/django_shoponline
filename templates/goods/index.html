@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cart_tags %}
 {% block js_default %}
     <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/slide.js' %}"></script>
@@ -45,7 +46,7 @@
 		</div>
 		<div class="guest_cart fr">
 			<a href="{% url 'cart_index' %}" class="cart_name fl">我的购物车</a>
-			<div class="goods_count fl" id="show_count">0</div>
+			<div class="goods_count fl" id="show_count">{% get_cart_count request.session.user_id|default:'' %}</div>
 		</div>
 	</div>
 
