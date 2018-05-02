@@ -13,7 +13,7 @@
 
 
     {% for record in cart_records %}
-        <ul class="cart_list_td clearfix" id="cart_list_{{ forloop.counter }}" name="{{ record.id }}">
+        <ul class="cart_list_td clearfix {{ record.id }}" id="cart_list_{{ forloop.counter }}">
             {% if forloop.first %}
                 <li class="col01"><input type="checkbox" id="check_one_{{ forloop.counter }}" checked onclick="check_bgc({{ forloop.counter }})"></li>
             {% else %}
@@ -25,13 +25,13 @@
 		    <li class="col05">{{ record.goods.unit_price }}元</li>
 		    <li class="col06">
 			    <div class="num_add">
-				    <a href="javascript:;" class="add fl">+</a>
-				    <input type="text" class="num_show fl" value="{{ record.count }}">
-				    <a href="javascript:;" class="minus fl">-</a>
+				    <a href="javascript:add({{ record.id }});" class="add fl">+</a>
+				    <input type="text" class="num_show fl" value="{{ record.count }}" id="{{ record.id }}">
+				    <a href="javascript:minus({{ record.id }})" class="minus fl">-</a>
 			    </div>
 		    </li>
 		    <li class="col07">元</li>
-		    <li class="col08"><a href="javascript:;">删除</a></li>
+		    <li class="col08"><a href="javascript:cart_del({{ record.id }});">删除</a></li>
         </ul>
     {% endfor %}
 
@@ -58,8 +58,11 @@
                 var unit_price = $(this).prev().prev().text(); //上上个
                 var xiaoji = parseFloat(count)*parseFloat(unit_price);
                 $(this).text(xiaoji.toFixed(2));
-                total_price_all=total_price_all+xiaoji;
-                total_count=total_count+parseInt(count);
+                if($(this).prev().prev().prev().prev().prev().prev().find('input').prop('checked')){
+                    total_price_all=total_price_all+xiaoji;
+                    total_count=total_count+parseInt(count);
+                }
+
                 type_count=type_count+1;
             });
             $('#total_money').text(total_price_all.toFixed(2)+'元');
@@ -73,7 +76,32 @@
             }else {
                 document.getElementById('cart_list_'+counter).style.backgroundColor='white';
             }
+            total();
+        }
 
+        function cart_del(cart_id) {
+            var cfm = confirm('确定删除吗？');
+            if(cfm){
+                $.get('/user/cart/delete_'+cart_id+'/',function (data) {
+                    if (data.flag ===1){
+                        $('.'+cart_id).remove();
+                        total();
+                    }
+                })
+            }
+        }
+
+        function add(cart_id) {
+            console.log('T');
+            var count=$('#'+cart_id);
+            count.val(parseFloat(count.val())+1).blur();
+        }
+
+        function minus(cart_id) {
+            var count=$('#'+cart_id);
+            if(parseFloat(count.val())>1){
+                count.val(parseFloat(count.val())-1).blur();
+            }
         }
 
         $(function () {
@@ -83,7 +111,7 @@
             //全选or全消
             $('#check_all').click(function () {
                 var flag = !($(this).prop('checked'));  //jq的prop方法:属性查询
-                $(':checkbox:not(#check_all)').prop('checked',flag) //所有checkbox除自己
+                $(':checkbox:not(#check_all)').prop('checked',flag); //所有checkbox除自己
                 $(':checkbox:not(#check_all)').click();
             });
 
@@ -97,28 +125,29 @@
                     $('#check_all').prop('checked',false);
                 }
         })
-        });
 
-        $('.add').click(function () {
-            var count=$(this).next();
-            count.val(parseFloat(count.val())+1).blur();
-        });
-
-        $('.minus').click(function () {
-            var count=$(this).next();
-            if(parseFloat(count.val())>1){
-                count.val(parseFloat(count.val())-1).blur();
-            }
-        });
-
-        $('.num_show').blur(function () {
+            //编辑数量
+            $('.num_show').blur(function () {
             var count=$(this).val();
             if(count<=0){
                 $(this).focus();
                 return;
             }
-            var cart_id=$(this).parent('.cart_list_td').attr('name');
-            $.get('')
-        })
+            var cart_id=$(this).attr('id');
+            $.get('/user/cart/edit_'+cart_id+'_'+count+'/',function (data) {
+                console.log(data.flag);
+                if(data.flag===0){ //修改成功
+                    total();
+                }else {
+                    alert('操作失败')
+                }
+            })
+            });
+        });
+
+
+
+
+
     </script>
 {% endblock script_default %}

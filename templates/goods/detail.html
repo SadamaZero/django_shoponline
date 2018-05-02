@@ -90,7 +90,6 @@
             //}
             if($('.login_btn').text().indexOf('注册')!==-1) {
                alert('请先登录');
-               document.cookie='url_from='+'555';
                location.href='{% url 'login'%}?from={{ request.get_full_path }}';
                return;
             }

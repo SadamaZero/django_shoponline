@@ -42,12 +42,22 @@ def add_to_cart(request, goods_id, count):
 
 @user_decorator.login_status
 def edit(request, cart_id, count):
-    # try:
-    #     cart = Cart.objects.filter(pk=cart_id)
-    #     # count_base = cart.count = count
-    # except
-    pass
+    try:
+        cart = Cart.objects.get(pk=cart_id)
+        cart.count = count
+        cart.save()
+        data = {'flag': 0}
+    except Exception as e:
+        data = {'flag': count}
+    return JsonResponse(data)
 
 
-def delete(request):
-    pass
+@user_decorator.login_status
+def delete(request, cart_id):
+    try:
+        cart = Cart.objects.get(pk=cart_id)
+        cart.delete()
+        data = {'flag': 1}
+    except Exception as e:
+        data = {'flag': 0}
+    return JsonResponse(data)

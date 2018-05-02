@@ -97,7 +97,7 @@
                     <a href="/{{ item.id }}">{{ item.name|slice:'10' }}</a>
                 {% endfor %}
 			</div>
-			<a href="/list1_1_1" class="goods_more fr" id="fruit_more">查看更多 ></a>
+			<a href="/list1_1_1/" class="goods_more fr" id="fruit_more">查看更多 ></a>
 		</div>
 
 		<div class="goods_con clearfix">
@@ -134,7 +134,7 @@
 				{% for item in type1_new %}
                     <li>
                         <h4><a href="/{{ item.id }}">{{ item.name|slice:'10' }}</a></h4>
-                        <a href="/{{ item.id }}"><img src="/{{ item.pic }}"></a>
+                        <a href="/detail_{{ item.id }}/"><img src="/{{ item.pic }}"></a>
 					    <div class="prize">¥ {{ item.unit_price }}</div>
                     </li>
                 {% endfor %}
