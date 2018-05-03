@@ -4,7 +4,7 @@ from .models import UserInfo
 from hashlib import sha1
 from . import user_decorator
 from goods.models import GoodsInfo
-
+from order.models import OrderInfo
 
 
 def register(request):
@@ -141,7 +141,18 @@ def center_info(request):
 
 @user_decorator.login_status
 def center_order(request):
-    return render(request, 'user_authentication/user_center_order.html')
+    """
+        此页面用户展示用户提交的订单，由购物车页面下单后转调过来，也可以从个人信息页面查看
+        根据用户订单是否支付、下单顺序进行排序
+    """
+    uid = request.session['user_id']
+    # 订单信息，根据是否支付、下单顺序进行排序
+    order_list = OrderInfo.objects.filter(user_id=uid).order_by('is_pay', '-oid')
+    context = {
+        'title': '全部订单',
+        'order_list': order_list
+    }
+    return render(request, 'user_authentication/user_center_order.html', context)
 
 
 @user_decorator.login_status

@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+
+@admin.register(OrderInfo)
+class OrderInfoAdmin(admin.ModelAdmin):
+    list_display = ['oid', 'user', 'date', 'is_pay']

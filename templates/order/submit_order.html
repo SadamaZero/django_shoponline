@@ -44,62 +44,128 @@
 			<li class="col04">数量</li>
 			<li class="col05">小计</li>		
 		</ul>
-		<ul class="goods_list_td clearfix">
-			<li class="col01">1</li>			
-			<li class="col02"><img src="images/goods/goods012.jpg"></li>
-			<li class="col03">奇异果</li>
-			<li class="col04">500g</li>
-			<li class="col05">25.80元</li>
-			<li class="col06">1</li>
-			<li class="col07">25.80元</li>	
+        {% for goods_in_order in goods_in_order_list %}
+        <ul class="goods_list_td clearfix" id="{{ goods_in_order.id }}">
+			<li class="col01">{{ goods_in_order.id }}</li>
+			<li class="col02"><img src="/{{ goods_in_order.goods.pic }}"></li>
+			<li class="col03">{{ goods_in_order.goods.name }}</li>
+			<li class="col04">{{ goods_in_order.goods.unit }}</li>
+			<li class="col05">{{ goods_in_order.goods.unit_price }}元</li>
+			<li class="col06">{{ goods_in_order.count }}</li>
+			<li class="col07" id="xiaoji">元</li>
 		</ul>
-		<ul class="goods_list_td clearfix">
-			<li class="col01">2</li>			
-			<li class="col02"><img src="images/goods/goods003.jpg"></li>
-			<li class="col03">大兴大棚草莓</li>
-			<li class="col04">500g</li>
-			<li class="col05">16.80元</li>
-			<li class="col06">1</li>
-			<li class="col07">16.80元</li>	
-		</ul>
+        {% endfor %}
 	</div>
 
 	<h3 class="common_title">总金额结算</h3>
 
 	<div class="common_list_con clearfix">
 		<div class="settle_con">
-			<div class="total_goods_count">共<em>2</em>件商品，总金额<b>42.60元</b></div>
+			<div class="total_goods_count">共<em id="total_goods_count"></em>件商品，总金额<b id="total_money"></b></div>
 			<div class="transit">运费：<b>10元</b></div>
-			<div class="total_pay">实付款：<b>52.60元</b></div>
+			<div class="total_pay">实付款：<b id="total_pay"></b></div>
 		</div>
 	</div>
 
 	<div class="order_submit clearfix">
 		<a href="javascript:;" id="order_btn">提交订单</a>
-	</div>	
-
-
-	<div class="popup_con">
-		<div class="popup">
-			<p>订单提交成功！</p>
-		</div>
-		
-		<div class="mask"></div>
 	</div>
-	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
-	<script type="text/javascript">
-		$('#order_btn').click(function() {
-			localStorage.setItem('order_finish',2);
+    <div class="popup_con">
+    <div class="popup">
+        <p></p>
+    </div>
 
-			$('.popup_con').fadeIn('fast', function() {
+    <div class="mask"></div>
+</div>
+     <script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
 
-				setTimeout(function(){
-					$('.popup_con').fadeOut('fast',function(){
-						window.location.href = '/user/center_order/';
-					});	
-				},3000)
-				
-			});
-		});
-	</script>
+        $(function () {
+            var total_price_all=0;
+            var total_count=0;
+            var type_count=0;
+            var total_to_pay=0;
+            $('.col07').each(function () {
+                var count = $(this).prev().text(); //上一个dom
+                var unit_price = $(this).prev().prev().text(); //上上个
+                var xiaoji = parseFloat(count)*parseFloat(unit_price);
+                $(this).text(xiaoji.toFixed(2));
+                total_price_all=total_price_all+xiaoji;
+                total_count=total_count+parseInt(count);
+                type_count=type_count+1;
+                 total_to_pay=total_price_all+10;
+            });
+            $('#total_money').text(total_price_all.toFixed(2)+'元');
+            $('#total_pay').text((total_price_all+10).toFixed(2)+'元');
+            $('#total_goods_count').text(total_count);
+
+            /* 下订单触发click事件，用来校验订单是否下成功，根据AJAX返回值展示不同页面*/
+            $('#order_btn').click(function(){
+                orderid = [];
+                $('.goods_list_td').each(function(){
+                orderid.push($(this).attr('id'));
+                });
+
+                localStorage.setItem('order_finish',2);
+                console.log(orderid,total_to_pay,'{{ user.uaddress }}');
+                $.post({
+                    url:'/user/submit_order/order_handle/',
+                    dataType:'json',
+                    type:'POST',
+                    data:{
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        id:orderid,
+                        total:total_to_pay,
+                        address:'{{ user.uaddress }}'
+                    }
+                })
+                .done(function(data){
+                    if(data.status === 1){
+                        $('.popup_con p').text('订单提交成功！');
+                        $('.popup_con').fadeIn('fast', function() {
+                            setTimeout(function(){
+                                $('.popup_con').fadeOut('fast',function(){
+	                                window.location.href = '/user/center_order/';
+                                });
+                            },3000)
+                        });
+                    }
+                    else if(data.status === 2){
+                        $('.popup_con p').text('非常抱歉，库存不足');
+                        $('.popup_con').fadeIn('fast', function() {
+                            setTimeout(function(){
+                                $('.popup_con').fadeOut('fast',function(){
+	                                window.location.href = '/user/cart/';
+                                });
+                            },3000)
+                        });
+                    }
+                });
+
+            });
+        })
+    </script>
+{#	<div class="popup_con">#}
+{#		<div class="popup">#}
+{#			<p>订单提交成功！</p>#}
+{#		</div>#}
+{##}
+{#		<div class="mask"></div>#}
+{#	</div>#}
+{#	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>#}
+{#	<script type="text/javascript">#}
+{#		$('#order_btn').click(function() {#}
+{#			localStorage.setItem('order_finish',2);#}
+{##}
+{#			$('.popup_con').fadeIn('fast', function() {#}
+{##}
+{#				setTimeout(function(){#}
+{#					$('.popup_con').fadeOut('fast',function(){#}
+{#						window.location.href = '/user/center_order/';#}
+{#					});	#}
+{#				},3000)#}
+{##}
+{#			});#}
+{#		});#}
+{#	</script>#}
 {% endblock body %}

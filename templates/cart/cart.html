@@ -11,13 +11,13 @@
 		<li class="col06">操作</li>
 	</ul>
 
-
+    <form action="{% url 'order_page' %}" method="get">
     {% for record in cart_records %}
         <ul class="cart_list_td clearfix {{ record.id }}" id="cart_list_{{ forloop.counter }}">
             {% if forloop.first %}
-                <li class="col01"><input type="checkbox" id="check_one_{{ forloop.counter }}" checked onclick="check_bgc({{ forloop.counter }})"></li>
+                <li class="col01"><input type="checkbox" id="check_one_{{ forloop.counter }}" name="cart_id" value="{{record.id}}" checked onclick="check_bgc({{ forloop.counter }})"></li>
             {% else %}
-                <li class="col01"><input type="checkbox" id="check_one_{{ forloop.counter }}" onclick="check_bgc({{ forloop.counter }})"></li>
+                <li class="col01"><input type="checkbox" id="check_one_{{ forloop.counter }}" name="cart_id" value="{{record.id}}" onclick="check_bgc({{ forloop.counter }})"></li>
             {% endif %}
 		    <li class="col02"><img src="/{{ record.goods.pic }}"></li>
 		    <li class="col03">{{ record.goods.name }}<br><em>{{ record.goods.unit_price }}元/{{ record.goods.unit }}</em></li>
@@ -41,8 +41,10 @@
 		<li class="col01"><input type="checkbox" id="check_all"></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em id="total_money">42.60</em><br>共计<b id="total_count">2</b>件商品</li>
-		<li class="col04"><a href="place_order.html">去结算</a></li>
+		<li class="col04"><a href="javascript:submit();">去结算</a></li>
+        <li class="col04"><input id="submit" class="order" name="" type="submit" value="去结算" style="display: none"></li>
 	</ul>
+    </form>
 {% endblock body %}
 
 
@@ -103,7 +105,14 @@
                 count.val(parseFloat(count.val())-1).blur();
             }
         }
-
+        
+        function submit() {
+            if($('#total_count').text()!=='0'){
+               $('#submit').click();
+            }else {
+                alert('请选择至少一件商品')
+            }
+        }
         $(function () {
             document.getElementById('cart_list_1').style.backgroundColor='#edfff9';
             total();
