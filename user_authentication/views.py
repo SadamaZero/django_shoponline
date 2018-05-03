@@ -141,9 +141,9 @@ def center_info(request):
 
 @user_decorator.login_status
 def center_order(request):
-    pass
+    return render(request, 'user_authentication/user_center_order.html')
 
 
 @user_decorator.login_status
 def center_site(request):
-    pass
+    return render(request, 'user_authentication/user_center_site.html')
