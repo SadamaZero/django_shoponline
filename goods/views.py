@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse
 from django.core.paginator import Paginator, Page
 from .models import *
+from haystack.views import SearchView
 
 
 def index(request):
@@ -55,6 +56,7 @@ def goods_list(request, tid, pindex=1, sort=1):  # type_id,page_num,排序依据
 
     context = {
         'title': '分类|'+typeinfo.title,
+        'type_name': typeinfo.title,
         'page': page,
         'paginator': paginator,
         'typeinfo': typeinfo,
@@ -77,7 +79,6 @@ def good_detail(request, g_id):
         'new_goods': new_goods,
         'id': g_id,
     }
-
     # 浏览记录
     goods_recent_cookie = request.COOKIES.get('goods_recent_cookie', '')
     good_id_recent = '%d' % good.id
@@ -98,3 +99,13 @@ def good_detail(request, g_id):
     res.set_cookie('goods_recent_cookie', goods_recent_cookie)
 
     return res
+
+
+class MySearchView(SearchView):
+    def extra_context(self):
+        new_goods = GoodsInfo.objects.all().order_by('-id')[0:2]
+        extra = super(MySearchView, self).extra_context()
+        extra['title'] = '搜索'
+        extra['new_goods'] = new_goods
+        print(1)
+        return extra

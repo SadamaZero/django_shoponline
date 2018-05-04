@@ -165,7 +165,7 @@ html,body{height:100%}
 	width:1200px;height:40px;margin:0 auto;
 }
 .breadcrumb a{line-height:40px;color:#37ab40}
-.breadcrumb a:hover{color:#ff8800}
+/*.breadcrumb a:hover{color:#ff8800}*/
 .breadcrumb span{line-height:40px;color:#666;padding:0 5px;}
 
 
@@ -522,7 +522,7 @@ html,body{height:100%}
 }
 
 .left_menu_con ul li .active{
-	color:#ff8800;
+	color:rgba(27,193,24,0.69);
 	font-weight:bold;
 }
 
@@ -643,4 +643,13 @@ html,body{height:100%}
 
 .stress{
 	color:#ff8800;
+}
+ a.main_page{
+	 color: #666;
+	 line-height: 29px;
+	 padding-left: 15px;
+	 font-size: 14px;
+ }
+a.main_page:hover{
+	color: rgba(31,193,64,0.62);
 }

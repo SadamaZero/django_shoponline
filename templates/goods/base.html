@@ -4,7 +4,9 @@
 {% block body %}
     <div class="header_con">
 		<div class="header">
-			<div class="welcome fl">欢迎来到天天生鲜!</div>
+			<div class="welcome fl">欢迎来到天天生鲜!
+                <a href="{% url 'main_page' %}" class="main_page">首页</a>
+            </div>
 			<div class="fr">
 				 {% if request.session.user_name|default:'' != '' %}
                     <div class="login_btn fl">
@@ -35,8 +37,10 @@
     <div class="search_bar clearfix">
 		<a href="{% url 'main_page' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
 		<div class="search_con fl">
-			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
-			<input type="button" class="input_btn fr" name="" value="搜索">
+			<form method='get' action="/search/" target="_blank">
+			    <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+			    <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
 		</div>
 		<div class="guest_cart fr">
 			<a href="{% url 'cart_index'%}" class="cart_name fl">我的购物车</a>
@@ -71,7 +75,7 @@
     <div class="breadcrumb">
 		<a href="#">全部分类</a>
 		<span>></span>
-		<a href="#">新鲜水果</a>
+		<a href="#">{% block nav_type %}{% endblock nav_type %}</a>
 	</div>
 
     {% block detail_comment %}{% endblock detail_comment %}
@@ -84,7 +88,7 @@
 					{% for good in new_goods %}
                         <!--改-->
                         <a href="/detail_{{ good.id }}/"><img src="/{{ good.pic }}"></a>
-						<h4><a href="/detail_{{ good.id }}/">{{ good.name }}</a></h4>
+						<h4><a href="/detail_{{ good.id }}/" style="color: #666">{{ good.name }}</a></h4>
 						<div class="prize">￥{{ good.unit_price }}</div>
                     {% endfor %}
 				</ul>

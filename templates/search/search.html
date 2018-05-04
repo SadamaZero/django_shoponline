@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cart_tags %}
+{% block body %}
+    <div class="header_con">
+		<div class="header">
+			<div class="welcome fl">欢迎来到天天生鲜!
+                <a href="{% url 'main_page' %}" class="main_page">首页</a>
+            </div>
+			<div class="fr">
+				 {% if request.session.user_name|default:'' != '' %}
+                    <div class="login_btn fl">
+					    欢迎您：<em>{{ request.session.user_name }}</em>
+				        <span>|</span>
+                        <a href="{% url 'logout' %}">退出</a>
+                    </div>
+                {% else %}
+                    <div class="login_btn fl">
+					    <a href="{% url 'login' %}?from={{ request.get_full_path }}" id="login_a">登录</a>
+					    <span>|</span>
+					    <a href="{% url 'register' %}">注册</a>
+				    </div>
+                {% endif %}
+
+                <div class="user_link fl">
+					<span>|</span>
+					<a href="{% url 'user_center' %}?from={{ request.get_full_path }}">用户中心</a>
+					<span>|</span>
+					<a href="{% url 'cart_index' %}">我的购物车</a>
+					<span>|</span>
+					<a href="{% url 'center_order' %}">我的订单</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <div class="search_bar clearfix">
+		<a href="{% url 'main_page' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
+		<div class="search_con fl">
+			<form method='get' action="/search/">
+			    <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+			    <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+		</div>
+		<div class="guest_cart fr">
+			<a href="{% url 'cart_index'%}" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fl" id="show_count">{% get_cart_count request.session.user_id|default:'' %}</div>
+		</div>
+	</div>
+
+    <div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>
+				<span></span>
+				<ul class="subnav">
+					<li><a href="/list1_1_1/" class="fruit">新鲜水果</a></li>
+					<li><a href="/list2_1_1/" class="seafood">海鲜水产</a></li>
+					<li><a href="/list3_1_1/" class="meet">猪牛羊肉</a></li>
+					<li><a href="#" class="egg">禽类蛋品</a></li>
+					<li><a href="#" class="vegetables">新鲜蔬菜</a></li>
+					<li><a href="#" class="ice">速冻食品</a></li>
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="/index/">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+    <div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="#">搜索</a>
+	</div>
+
+    {% block detail_comment %}{% endblock detail_comment %}
+
+    <div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+
+					{% for good in new_goods %}
+                        <!--改-->
+                        <a href="/detail_{{ good.id }}/"><img src="/{{ good.pic }}"></a>
+						<h4><a href="/detail_{{ good.id }}/" style="color: #666">{{ good.name }}</a></h4>
+						<div class="prize">￥{{ good.unit_price }}</div>
+                    {% endfor %}
+				</ul>
+			</div>
+		</div>
+
+
+
+    <div class="r_wrap fr clearfix">
+    {% if query %}
+    <h2>搜索结果如下：</h2>
+        <ul class="goods_type_list clearfix">
+    {% for good in page %}
+        <li id="{{ good.object.id }}">
+                <a href="/detail_{{ good.object.id }}/"><img src="/{{ good.object.pic }}"></a>
+                <h4><a href="detail_{{ good.object.id }}/">{{ good.object.name }}</a></h4>
+                <div class="operate">
+                    <span class="prize">￥{{ good.object.unit_price }}</span>
+                    <span class="unit">/{{ good.object.unit }}</span>
+                    <a href='javascript:add_cart({{ good.object.id }})' id="add_cart" class="add_goods" title="加入购物车"></a>
+                </div>
+            </li>
+    {% empty %}
+        <div style="text-align: center;font-size: 28px;padding-top: 40px;">抱歉，暂无该商品。</div>
+    {% endfor %}
+        </ul>
+    {% if page.has_previous or page.has_next %}
+        <div>
+            {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; 上一页{% if page.has_previous %}</a>{% endif %}
+        |
+            {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}下一页 &raquo;{% if page.has_next %}</a>{% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+    </div>
+    </div>
+
+    <script>
+        function add_cart(good_id) {
+            if($('.login_btn').text().indexOf('注册')!==-1) {
+               alert('请先登录');
+               document.cookie='url_from=';
+               location.href='{% url 'login'%}?from={{ request.get_full_path }}';
+               return;
+            }
+            $.get('/user/cart/add'+good_id+'_1/',function (data) {
+                $('#show_count').html(data.count);
+            })
+            alert('已加入购物车，请在购物车中查看')
+        }
+    </script>
+{% endblock body %}
